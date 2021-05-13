@@ -1,12 +1,18 @@
 import calendar
-import datetime
 import sys
 import tkinter as tk            #sudo apt-get install python3-tk (Ubuntu)
 from tkinter import messagebox
 from tkinter import filedialog
 from natsort import natsorted   #pip install natsort(Windows/Ubuntu)
 
-def get_day_of_nth_dow(year, month, nth, dow):
+def lastweek(year, month, dow):
+    n = calendar.monthrange(year, month)[1]
+    l = range(n - 6, n + 1)
+    w = calendar.weekday(year, month, l[0])
+    w_l = [i % 7 for i in range(w, w + 7)]
+    return l[w_l.index(dow)]
+
+def nthweek(year, month, nth, dow):
     if nth < 1 or dow < 0 or dow > 6:
         return None
 
@@ -289,35 +295,29 @@ def start_year():
             task_list = file_read(filepath)
         else:
             task_list = []
-
-        print(task_list)
         
         for i in range(len(task_list)):
             special_day = task_list[i][1]
             special_month = task_list[i][0]
             if int(special_day) <= -1:
+                lastweek_mode = 1
+                dow = (abs(int(special_day))%7)
                 if -7 <= int(special_day) <= -1:
                     nth = 1
-                    dow = abs(int(special_day))
-                    print(dow)
                 elif -14 <= int(special_day) <=-8:
-                    nth = 2
-                    dow = (abs(int(special_day))%7)
-                    print(dow)
+                    nth = 2    
                 elif -21 <= int(special_day) <=-15:
                     nth = 3
-                    dow = (abs(int(special_day))%7)
-                    print(dow)
-                elif -28 <= special_day <=-22:
+                elif -28 <= int(special_day) <=-22:
                     nth = 4
-                    dow = (abs(int(special_day))%7)
-                    print(dow)
-
-                task_day = get_day_of_nth_dow(int(year),int(special_month) , nth, dow)
+                else:
+                    lastweek_mode = 0
+                    task_day = lastweek(int(year), int(special_month), dow)
+                
+                if lastweek_mode == 1:
+                    task_day = nthweek(int(year),int(special_month) , nth, dow)
+                
                 task_list[i][1] = task_day           
-             
-       
-        print(natsorted(task_list))
 
         ret = messagebox.askyesno(
             '確認', year + '年を作成しますか？')
