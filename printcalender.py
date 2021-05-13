@@ -63,7 +63,6 @@ def isleap(year):
 def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_print, sat_mode, sun_mode):
     # 月表示(月,月の日数,初日の曜日までの空白,予定リスト,予定リストの番目数,表示X座標,表示Y座標,表示ウィンドウ名,土曜着色,日曜着色)
     # その月のカレンダー表示
-
     block = 0
     i = 0
     i += 1
@@ -77,7 +76,6 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
         newx += 20
 
     for day in range(1,month_day+1):
-
         # 予定リスト確認
         task_month = 0
         task_day = 0
@@ -90,26 +88,60 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
             task_about = task_list[j][2]
 
         # 予定リスト判定
-        if int(task_month) == int(month) and (int(task_day) < 0):
-            print("特殊モード")
         if(int(task_month) == int(month) and int(task_day) == int(day)):
             color = "red1"
-            if day < 10 and month < 10:
-                task_about = "0"+str(task_month)+"月0" +\
+            if  int(task_day)< 10 and int(task_month) < 10:
+                task_print = "0"+str(task_month)+"月0" +\
                     str(task_day)+"日："+str(task_about)
-            elif day < 10:
-                task_about = str(task_month)+"月0" +\
+            elif int(task_day) < 10:
+                task_print = str(task_month)+"月0" +\
                     str(task_day)+"日："+str(task_about)
-            elif month < 10:
-                task_about = "0"+str(task_month)+"月" +\
+            elif int(task_month) < 10:
+                task_print = "0"+str(task_month)+"月" +\
                     str(task_day)+"日："+str(task_about)
             else:
-                task_about = str(task_month)+"月" +\
+                task_print = str(task_month)+"月" +\
                     str(task_day)+"日："+str(task_about)
-            printtask = printday = tk.Label(
-                cal_print, text=task_about, foreground="black")
-            printtask.place(x=500, y=40+(j*20))
-            j += 1
+            
+            print(task_print)
+            print_task = tk.Label(
+                cal_print, text=task_print, foreground="black")
+            print_task.place(x=500, y=40+(j*20))
+            
+            #ここが？？？
+            while 1:
+                if j+1 < len(task_list) != "":
+                    task_print=""
+                    print_task=""
+                    next_task_month = task_list[j+1][0]
+                    next_task_day = task_list[j+1][1]
+                    next_task_about = task_list[j+1][2]
+
+                    if not((int(task_month) == int(next_task_month)) and (int(task_day) == int(next_task_day))):
+                        j += 1
+                        break
+                    else:
+                        j += 1
+                        if int(next_task_day) < 10 and int(next_task_month) < 10:
+                            task_print = "0"+str(next_task_month)+"月0" +\
+                            str(next_task_day)+"日："+str(next_task_about)
+                        elif int(next_task_day) < 10:
+                            task_print = str(next_task_month)+"月0" +\
+                                str(next_task_day)+"日："+str(next_task_about)
+                        elif int(next_task_month) < 10:
+                            task_print = "0"+str(next_task_month)+"月" +\
+                                str(next_task_day)+"日："+str(next_task_about)
+                        else:
+                            task_print = str(next_task_month)+"月" +\
+                                str(next_task_day)+"日："+str(next_task_about)
+                        print(task_print)
+                        print_task = tk.Label(
+                        cal_print, text=task_print, foreground="black")
+                        print_task.place(x=500, y=40+(j*20))
+
+                else:
+                    break
+                    
 
         elif(block % 7 == 6 and sat_mode == 0):
             # 土曜日を青色に着色
@@ -120,9 +152,10 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
         else:
             # 予定もなく普通の日は黒色に着色
             color = "black"
-
+            
         printday = tk.Label(cal_print, text=day, foreground=color)
         printday.place(x=newx, y=newy)
+
         newx += 20
         if (6 == block % 7):
             newx = 20 + xmonth
@@ -292,13 +325,13 @@ def start_year():
         sun_mode = sunday_mode_var.get()
         filepath = entry_path.get()
         if filepath != "":
-            task_list = file_read(filepath)
+            tasklist = file_read(filepath)
         else:
-            task_list = []
+            tasklist = []
         
-        for i in range(len(task_list)):
-            special_day = task_list[i][1]
-            special_month = task_list[i][0]
+        for i in range(len(tasklist)):
+            special_day = tasklist[i][1]
+            special_month = tasklist[i][0]
             if int(special_day) <= -1:
                 lastweek_mode = 1
                 dow = (abs(int(special_day))%7)
@@ -317,7 +350,10 @@ def start_year():
                 if lastweek_mode == 1:
                     task_day = nthweek(int(year),int(special_month) , nth, dow)
                 
-                task_list[i][1] = task_day           
+                tasklist[i][1] = str(task_day)      
+
+        task_list = natsorted(tasklist)
+        print(task_list)     
 
         ret = messagebox.askyesno(
             '確認', year + '年を作成しますか？')
