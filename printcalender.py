@@ -103,7 +103,6 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
                 task_print = str(task_month)+"月" +\
                     str(task_day)+"日："+str(task_about)
             
-            print(task_print)
             print_task = tk.Label(
                 cal_print, text=task_print, foreground="black")
             print_task.place(x=500, y=40+(j*20))
@@ -134,7 +133,6 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
                         else:
                             task_print = str(next_task_month)+"月" +\
                                 str(next_task_day)+"日："+str(next_task_about)
-                        print(task_print)
                         print_task = tk.Label(
                         cal_print, text=task_print, foreground="black")
                         print_task.place(x=500, y=40+(j*20))
@@ -353,7 +351,6 @@ def start_year():
                 tasklist[i][1] = str(task_day)      
 
         task_list = natsorted(tasklist)
-        print(task_list)     
 
         ret = messagebox.askyesno(
             '確認', year + '年を作成しますか？')
