@@ -4,6 +4,7 @@ import tkinter as tk            #sudo apt-get install python3-tk (Ubuntu)
 from tkinter import messagebox
 from tkinter import filedialog
 from natsort import natsorted   #pip install natsort(Windows/Ubuntu)
+from functools import partial
 
 def lastweek(year, month, dow):
     n = calendar.monthrange(year, month)[1]
@@ -35,7 +36,6 @@ def file_read(filepath):
     else:
         fp = ""
         return
-
 
 def zeller(year, month, day):
     # 1月1日または月初めの曜日判定
@@ -86,8 +86,27 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
             task_month = task_list[j][0]
             task_day = task_list[j][1]
             task_about = task_list[j][2]
+            flag = 0
+            # 予定リスト判定
+            if (int(task_month) == (1 or 3 or 5 or 7 or 8 or 10 or 12)):
+                if(-35<=int(task_day)<=31):
+                    flag = 0
+                else:
+                    flag = 1
+            elif (int(task_month) == (4 or 6 or 9 or 11)):
+                if(-35<=int(task_day)<=30):
+                    flag = 0
+                else:
+                    flag = 1
+            elif (int(task_month) == 2):
+                if(-35<=int(task_day)<=int(month_day)):
+                    flag = 0
+                else:
+                    flag = 1
 
-        # 予定リスト判定
+            if flag == 1:
+                task_list.remove(task_list[j])
+
         if(int(task_month) == int(month) and int(task_day) == int(day)):
             color = "red1"
             if  int(task_day)< 10 and int(task_month) < 10:
@@ -107,7 +126,6 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
                 cal_print, text=task_print, foreground="black")
             print_task.place(x=500, y=40+(j*20))
             
-            #ここが？？？
             while 1:
                 if j+1 < len(task_list) != "":
                     task_print=""
@@ -168,6 +186,171 @@ def exit():
     if ans == True:
         sys.exit()
 
+def make_file():
+    task_txt=[]
+    make_window = tk.Tk()
+    make_window.title("ファイル作成")
+    make_window.geometry("600x600")
+    about = tk.Label(make_window, text="ここでは読み込み用ファイルを作成できます。")
+    about.place(x=20, y=20)
+
+    about_month = tk.Label(make_window, text="予定・月(必須)")
+    about_month.place(x=20, y=40)
+
+    entry_month = tk.Entry(make_window)
+    entry_month.place(x=20, y=70)
+
+    about_day = tk.Label(make_window, text="予定・日(必須)")
+    about_day.place(x=20, y=100)
+    about_day_2 = tk.Label(make_window,text="特別な日を設定する場合は右のメニューから選択してください。")
+    about_day_2.place(x=20, y=120)
+
+    entry_day = tk.Entry(make_window)
+    entry_day.place(x=20, y=150)
+
+    task_about = tk.Label(make_window, text="予定の内容(任意)")
+    task_about.place(x=20, y=180)
+
+    entry_about = tk.Entry(make_window,width=20)
+    entry_about.place(x=20, y=210)
+    
+    def view_file():
+        view_list = tk.Tk()
+        view_list.title("ファイルの内容")
+        view_list.geometry("300x600")
+        about = tk.Label(view_list, text="現在のファイルの内容です")
+        about.place(x=20, y=20)
+        for i in range(0,len(task_txt)):
+            list_month = task_txt[i][0]
+            list_day = task_txt[i][1]
+            list_about = task_txt[i][2]
+            if  int(list_day)< 10 and int(list_month) < 10:
+                task_print = "0"+str(list_month)+"月0" +\
+                    str(list_day)+"日："+str(list_about)
+            elif int(list_day) < 10:
+                task_print = str(list_month)+"月0" +\
+                    str(list_day)+"日："+str(list_about)
+            elif int(list_month) < 10:
+                task_print = "0"+str(list_month)+"月" +\
+                    str(list_day)+"日："+str(list_about)
+            else:
+                task_print = str(list_month)+"月" +\
+                    str(list_day)+"日："+str(list_about)
+            
+            print_task = tk.Label(
+                view_list, text=task_print, foreground="black")
+            print_task.place(x=20, y=40+(i*20))
+
+        def view_close():
+            view_list.destroy() 
+
+        exit_button = tk.Button(view_list, text="閉じる", command=view_close, width=15, height=2)
+        exit_button.place(x=20, y=530)
+        tk.mainloop()
+
+
+
+    def add_file():
+        add_list=[]
+        flag = 0
+        task_month = entry_month.get()        
+        task_day = entry_day.get()
+        task_about = entry_about.get()
+
+        if (1 <= int(task_month) <= 12):
+            if (int(task_month) == (1 or 3 or 5 or 7 or 8 or 10 or 12))and(1<=int(task_day)<=31):
+                flag = 1
+            elif (int(task_month) == (4 or 6 or 9 or 11))and(1<=int(task_day)<=30):
+                flag = 1
+            elif (int(task_month) == 2)and(1<=int(task_day)<=29):
+                flag = 1
+        
+        if flag == 1:
+            add_list.append(task_month)
+            add_list.append(task_day)
+            add_list.append(task_about)
+
+            task_txt.append(add_list)
+            print(task_txt)
+
+
+    def remove_file():
+        add_list=[]
+        task_month = entry_month.get()
+        add_list.append(task_month)
+        
+        task_day = entry_day.get()
+        add_list.append(task_day)
+
+        task_about = entry_about.get()
+        add_list.append(task_about)
+
+        task_txt.remove(add_list)
+        print(task_txt)
+
+    def force_save_file():
+        save_txt = natsorted(task_txt)
+        types = [("テキストファイル", ".txt")]
+        filename = filedialog.asksaveasfilename(filetypes=types)
+        if filename != "":
+            fp = open(filename,"w",encoding="utf-8_sig")
+            fp.write("")
+            fp.close()
+
+            fp = open(filename,"a",encoding="utf-8_sig")
+            for i in range(0,len(save_txt)):
+                line = save_txt[i][0] + ","+save_txt[i][1]+","+save_txt[i][2]+"\n"
+                fp.writelines(line)              
+            fp.close()
+        else:
+            return
+
+    def save_file():
+        save_txt = natsorted(task_txt)
+        types = [("テキストファイル", ".txt")]
+        filename = filedialog.asksaveasfilename(filetypes=types)
+        if filename != "":
+            fp = open(filename,"a",encoding="utf-8_sig")
+            for i in range(0,len(save_txt)):
+                line = save_txt[i][0] + ","+save_txt[i][1]+","+save_txt[i][2]+"\n"
+                fp.writelines(line)              
+            fp.close()
+
+    def close():
+        ret = messagebox.askyesno('確認','このモードを終了しますか？')
+        if ret == False:
+            return
+        make_window.destroy()
+    
+    view_button = tk.Button(make_window, text="予定確認",
+                            command=view_file, width=15, height=2)
+    view_button.place(x=20, y=320)
+
+    add_button = tk.Button(make_window, text="予定追加",
+                            command=add_file, width=15, height=2)
+    add_button.place(x=20, y=390)
+
+    remove_button = tk.Button(make_window, text="予定削除", command=remove_file, width=15, height=2)
+    remove_button.place(x=20, y=390)
+
+    add_button = tk.Button(make_window, text="予定追加", command=add_file, width=15, height=2)
+    add_button.place(x=210, y=390)
+
+    force_save_button = tk.Button(make_window, text="上書き保存",
+                            command=force_save_file, width=15, height=2)
+    force_save_button.place(x=20, y=460)
+
+    save_button = tk.Button(make_window, text="追記保存",
+                            command=save_file, width=15, height=2)
+    save_button.place(x=210, y=460)
+
+    open_button = tk.Button(make_window, text="ファイルを開く", command=close, width=15, height=2)
+    open_button.place(x=20, y=530)
+
+    exit_button = tk.Button(make_window, text="終了する", command=close, width=15, height=2)
+    exit_button.place(x=210, y=530)
+
+    tk.mainloop()
 
 def start_month():
     # 1か月のカレンダー作成
@@ -390,9 +573,9 @@ def start_year():
                 week = tk.Label(cal_print, text=week_list[i])
                 week.place(x=xweek+(20*i), y=yweek)
 
-            if (month == 1 or month == 3 or month == 5 or month == 7 or month == 8 or month == 10 or month == 12):
+            if (month == (1 or 3 or 5 or 7 or 8 or 10 or 12)):
                 day = 31
-            elif(month == 4 or month == 6 or month == 9 or month == 11):
+            elif(month == (4 or 6 or 9 or 11)):
                 day = 30
             elif(leap == 1):
                 day = 29
@@ -435,9 +618,14 @@ def start_year():
             print("ファイルを開きました")
         return
 
-    next_button = tk.Button(setting, text="ファイルを開く(予定を読み込む場合)",
-                            command=file_open, width=35, height=2)
-    next_button.place(x=20, y=180)
+    fileopen_button = tk.Button(setting, text="ファイルを開く",
+                            command=file_open, width=15, height=2)
+    fileopen_button.place(x=20, y=180)
+
+    filemake_button = tk.Button(setting, text="読み込みファイル作成",
+                            command=make_file, width=15, height=2)
+    filemake_button.place(x=180, y=180)
+
     next_button = tk.Button(setting, text="カレンダーを作る",
                             command=btn_start, width=15, height=2)
     next_button.place(x=20, y=250)
