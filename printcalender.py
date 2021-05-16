@@ -186,8 +186,17 @@ def exit():
     if ans == True:
         sys.exit()
 
-def make_file():
-    task_txt=[]
+def make_file(i):
+    if i == 0:
+        ftype = [("テキストファイル", "*.txt")]
+        filepath = tk.filedialog.askopenfilename(filetypes=ftype)
+        if filepath != "":
+            print("ファイルを開きました")
+            task_txt = file_read(filepath)
+        else:
+            task_txt = []
+        i += 1
+    print(task_txt)
     make_window = tk.Tk()
     make_window.title("ファイル作成")
     make_window.geometry("600x600")
@@ -215,6 +224,7 @@ def make_file():
     entry_about.place(x=20, y=210)
     
     def view_file():
+        print(task_txt)
         view_list = tk.Tk()
         view_list.title("ファイルの内容")
         view_list.geometry("300x600")
@@ -224,7 +234,10 @@ def make_file():
             list_month = task_txt[i][0]
             list_day = task_txt[i][1]
             list_about = task_txt[i][2]
-            if  int(list_day)< 10 and int(list_month) < 10:
+            if int(list_day) < 0 and int(list_month)<10:
+                task_print = "0"+str(list_month)+"月" +\
+                    "特殊日："+str(list_about)
+            elif  int(list_day)< 10 and int(list_month) < 10:
                 task_print = "0"+str(list_month)+"月0" +\
                     str(list_day)+"日："+str(list_about)
             elif int(list_day) < 10:
@@ -257,21 +270,12 @@ def make_file():
         task_day = entry_day.get()
         task_about = entry_about.get()
 
-        if (1 <= int(task_month) <= 12):
-            if (int(task_month) == (1 or 3 or 5 or 7 or 8 or 10 or 12))and(1<=int(task_day)<=31):
-                flag = 1
-            elif (int(task_month) == (4 or 6 or 9 or 11))and(1<=int(task_day)<=30):
-                flag = 1
-            elif (int(task_month) == 2)and(1<=int(task_day)<=29):
-                flag = 1
-        
-        if flag == 1:
-            add_list.append(task_month)
-            add_list.append(task_day)
-            add_list.append(task_about)
+        add_list.append(task_month)
+        add_list.append(task_day)
+        add_list.append(task_about)
+        task_txt.append(add_list)
+        print(task_txt)
 
-            task_txt.append(add_list)
-            print(task_txt)
 
 
     def remove_file():
@@ -623,7 +627,7 @@ def start_year():
     fileopen_button.place(x=20, y=180)
 
     filemake_button = tk.Button(setting, text="読み込みファイル作成",
-                            command=make_file, width=15, height=2)
+                            command=partial(make_file, 0), width=15, height=2)
     filemake_button.place(x=180, y=180)
 
     next_button = tk.Button(setting, text="カレンダーを作る",
