@@ -86,6 +86,7 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
             task_month = task_list[j][0]
             task_day = task_list[j][1]
             task_about = task_list[j][2]
+            task_color = task_list[j][3]
             flag = 0
             # 予定リスト判定
             if (int(task_month) == (1 or 3 or 5 or 7 or 8 or 10 or 12)):
@@ -108,7 +109,9 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
                 task_list.remove(task_list[j])
 
         if(int(task_month) == int(month) and int(task_day) == int(day)):
-            color = "red1"
+            if task_color == "":
+                task_color = "red1"
+            
             if  int(task_day)< 10 and int(task_month) < 10:
                 task_print = "0"+str(task_month)+"月0" +\
                     str(task_day)+"日："+str(task_about)
@@ -123,7 +126,7 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
                     str(task_day)+"日："+str(task_about)
             
             print_task = tk.Label(
-                cal_print, text=task_print, foreground="black")
+                cal_print, text=task_print, foreground=task_color)
             print_task.place(x=500, y=40+(j*20))
             
             while 1:
@@ -133,6 +136,10 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
                     next_task_month = task_list[j+1][0]
                     next_task_day = task_list[j+1][1]
                     next_task_about = task_list[j+1][2]
+                    next_task_color = task_list[j+1][3]
+                    
+                    if next_task_color == "":
+                        next_task_color = "red1"
 
                     if not((int(task_month) == int(next_task_month)) and (int(task_day) == int(next_task_day))):
                         j += 1
@@ -152,7 +159,7 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
                             task_print = str(next_task_month)+"月" +\
                                 str(next_task_day)+"日："+str(next_task_about)
                         print_task = tk.Label(
-                        cal_print, text=task_print, foreground="black")
+                        cal_print, text=task_print, foreground=next_task_color)
                         print_task.place(x=500, y=40+(j*20))
 
                 else:
@@ -161,15 +168,15 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
 
         elif(block % 7 == 6 and sat_mode == 0):
             # 土曜日を青色に着色
-            color = "darkBlue"
+            task_color = "darkBlue"
         elif(block % 7 == 0 and sun_mode == 0):
             # 日曜日を赤色に着色
-            color = "red3"
+            task_color = "red3"
         else:
             # 予定もなく普通の日は黒色に着色
-            color = "black"
+            task_color = "black"
             
-        printday = tk.Label(cal_print, text=day, foreground=color)
+        printday = tk.Label(cal_print, text=day, foreground=task_color)
         printday.place(x=newx, y=newy)
 
         newx += 20
@@ -550,7 +557,7 @@ def start_year():
             leap = isleap(int(year))
             cal_print = tk.Tk()
             cal_print.title("生成結果")
-            cal_print.geometry("780x780")
+            cal_print.geometry("1000x780")
             printyear = str(year) + "年"
             mon = tk.Label(cal_print, text=printyear)
             mon.place(x=20, y=20)
@@ -577,9 +584,9 @@ def start_year():
                 week = tk.Label(cal_print, text=week_list[i])
                 week.place(x=xweek+(20*i), y=yweek)
 
-            if (month == (1 or 3 or 5 or 7 or 8 or 10 or 12)):
+            if (month == 1 or month == 3 or month == 5 or month == 7 or month == 8 or month == 10 or month == 12):
                 day = 31
-            elif(month == (4 or 6 or 9 or 11)):
+            elif(month == 4 or month == 6 or month == 9 or month == 11):
                 day = 30
             elif(leap == 1):
                 day = 29
