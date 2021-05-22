@@ -7,6 +7,8 @@ from natsort import natsorted   #pip install natsort(Windows/Ubuntu)
 from functools import partial
 
 def lastweek(year, month, dow):
+    #その月の最終曜日を取得する(年,月,曜日)
+    #月曜：0-日曜：6
     n = calendar.monthrange(year, month)[1]
     l = range(n - 6, n + 1)
     w = calendar.weekday(year, month, l[0])
@@ -14,6 +16,7 @@ def lastweek(year, month, dow):
     return l[w_l.index(dow)]
 
 def nthweek(year, month, nth, dow):
+    #その月の第X曜日を取得する(年,月,X,曜日)
     if nth < 1 or dow < 0 or dow > 6:
         return None
 
@@ -86,7 +89,7 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
             task_month = task_list[j][0]
             task_day = task_list[j][1]
             task_about = task_list[j][2]
-            task_color = task_list[j][3]
+            #task_color = task_list[j][3]
             flag = 0
             # 予定リスト判定
             if (int(task_month) == (1 or 3 or 5 or 7 or 8 or 10 or 12)):
@@ -136,8 +139,8 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
                     next_task_month = task_list[j+1][0]
                     next_task_day = task_list[j+1][1]
                     next_task_about = task_list[j+1][2]
-                    next_task_color = task_list[j+1][3]
-                    
+                    #next_task_color = task_list[j+1][3]
+
                     if next_task_color == "":
                         next_task_color = "red1"
 
@@ -194,7 +197,9 @@ def exit():
         sys.exit()
 
 def make_file(i):
-    if i == 0:
+    messeage_txt = "新規作成しますか？"+"\n"+"「いいえ」を選択すると別のファイルに追記できます。"
+    ans = messagebox.askyesno("確認", messeage_txt)
+    if ans == True:
         ftype = [("テキストファイル", "*.txt")]
         filepath = tk.filedialog.askopenfilename(filetypes=ftype)
         if filepath != "":
@@ -202,7 +207,9 @@ def make_file(i):
             task_txt = file_read(filepath)
         else:
             task_txt = []
-        i += 1
+    else:
+        task_txt=[]
+
     print(task_txt)
     make_window = tk.Tk()
     make_window.title("ファイル作成")
@@ -272,7 +279,6 @@ def make_file(i):
 
     def add_file():
         add_list=[]
-        flag = 0
         task_month = entry_month.get()        
         task_day = entry_day.get()
         task_about = entry_about.get()
