@@ -1,4 +1,5 @@
 import calendar
+import webbrowser
 import sys
 import tkinter as tk            #sudo apt-get install python3-tk (Ubuntu)
 from tkinter import messagebox
@@ -89,7 +90,7 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
             task_month = task_list[j][0]
             task_day = task_list[j][1]
             task_about = task_list[j][2]
-            #task_color = task_list[j][3]
+            task_color = task_list[j][3]
             flag = 0
             # 予定リスト判定
             if (int(task_month) == (1 or 3 or 5 or 7 or 8 or 10 or 12)):
@@ -139,7 +140,7 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
                     next_task_month = task_list[j+1][0]
                     next_task_day = task_list[j+1][1]
                     next_task_about = task_list[j+1][2]
-                    #next_task_color = task_list[j+1][3]
+                    next_task_color = task_list[j+1][3]
 
                     if next_task_color == "":
                         next_task_color = "red1"
@@ -225,7 +226,7 @@ def make_file(i):
 
     about_day = tk.Label(make_window, text="予定・日(必須)")
     about_day.place(x=20, y=100)
-    about_day_2 = tk.Label(make_window,text="特別な日を設定する場合は右のメニューから選択してください。")
+    about_day_2 = tk.Label(make_window,text="第XY曜日はREADMEをご覧ください。")
     about_day_2.place(x=20, y=120)
 
     entry_day = tk.Entry(make_window)
@@ -236,7 +237,21 @@ def make_file(i):
 
     entry_about = tk.Entry(make_window,width=20)
     entry_about.place(x=20, y=210)
+
+    task_color = tk.Label(make_window, text="予定日の表示色(指定しない場合は黒)")
+    task_color.place(x=20, y=240)
+
+    entry_color = tk.Entry(make_window,width=20)
+    entry_color.place(x=20, y=270)
     
+    def view_color():
+        view_txt = "使用できる色を確認しますか？" + "\n" + "ブラウザがURL(https://www.astrouw.edu.pl/~jskowron/colors-x11/rgb.html)を開きます。"
+        ret = messagebox.askyesno('確認',view_txt)
+        if ret == False:
+            return
+        else:
+            webbrowser.open("https://www.astrouw.edu.pl/~jskowron/colors-x11/rgb.html")
+
     def view_file():
         print(task_txt)
         view_list = tk.Tk()
@@ -248,6 +263,8 @@ def make_file(i):
             list_month = task_txt[i][0]
             list_day = task_txt[i][1]
             list_about = task_txt[i][2]
+            list_color = task_txt[i][3]
+
             if int(list_day) < 0 and int(list_month)<10:
                 task_print = "0"+str(list_month)+"月" +\
                     "特殊日："+str(list_about)
@@ -265,7 +282,7 @@ def make_file(i):
                     str(list_day)+"日："+str(list_about)
             
             print_task = tk.Label(
-                view_list, text=task_print, foreground="black")
+                view_list, text=task_print, foreground=list_color)
             print_task.place(x=20, y=40+(i*20))
 
         def view_close():
@@ -279,14 +296,26 @@ def make_file(i):
 
     def add_file():
         add_list=[]
-        task_month = entry_month.get()        
-        task_day = entry_day.get()
-        task_about = entry_about.get()
+        if (entry_month.get() == "" or entry_day.get() == ""):
+            return
+        else:
+            task_month = entry_month.get()        
+            task_day = entry_day.get()
+            if entry_about.get() == "":
+                task_about = " "
+            else:
+                task_about = entry_about.get()
 
-        add_list.append(task_month)
-        add_list.append(task_day)
-        add_list.append(task_about)
-        task_txt.append(add_list)
+            if entry_color.get() == "":
+                task_color = "black"
+            else:
+                task_color = entry_color.get()
+
+            add_list.append(task_month)
+            add_list.append(task_day)
+            add_list.append(task_about)
+            add_list.append(task_color)
+            task_txt.append(add_list)
         print(task_txt)
 
 
@@ -299,8 +328,19 @@ def make_file(i):
         task_day = entry_day.get()
         add_list.append(task_day)
 
-        task_about = entry_about.get()
-        add_list.append(task_about)
+        if entry_about.get() == "":
+            task_about = " "
+            add_list.append(task_about)
+        else:
+            task_about = entry_about.get()
+            add_list.append(task_about)
+
+        if entry_color.get() == "":
+            task_color = "black"
+            add_list.append(task_color)
+        else:
+            task_color = entry_color.get()
+            add_list.append(task_color)
 
         task_txt.remove(add_list)
         print(task_txt)
@@ -342,6 +382,10 @@ def make_file(i):
     view_button = tk.Button(make_window, text="予定確認",
                             command=view_file, width=15, height=2)
     view_button.place(x=20, y=320)
+
+    view_button = tk.Button(make_window, text="使用可能色確認",
+                            command=view_color, width=15, height=2)
+    view_button.place(x=210, y=320)
 
     add_button = tk.Button(make_window, text="予定追加",
                             command=add_file, width=15, height=2)
