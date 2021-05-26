@@ -197,8 +197,8 @@ def exit():
     if ans == True:
         sys.exit()
 
-def make_file(i):
-    messeage_txt = "新規作成しますか？"+"\n"+"「いいえ」を選択すると別のファイルに追記できます。"
+def make_file():
+    messeage_txt = "既存のファイルを編集しますか？"+"\n"+"「いいえ」を選択すると新規でファイルを作成します。"
     ans = messagebox.askyesno("確認", messeage_txt)
     if ans == True:
         ftype = [("テキストファイル", "*.txt")]
@@ -214,7 +214,7 @@ def make_file(i):
     print(task_txt)
     make_window = tk.Tk()
     make_window.title("ファイル作成")
-    make_window.geometry("600x600")
+    make_window.geometry("600x530")
     about = tk.Label(make_window, text="ここでは読み込み用ファイルを作成できます。")
     about.place(x=20, y=20)
 
@@ -238,7 +238,7 @@ def make_file(i):
     entry_about = tk.Entry(make_window,width=20)
     entry_about.place(x=20, y=210)
 
-    task_color = tk.Label(make_window, text="予定日の表示色(指定しない場合は黒)")
+    task_color = tk.Label(make_window, text="予定日の表示色(指定しない場合は赤)")
     task_color.place(x=20, y=240)
 
     entry_color = tk.Entry(make_window,width=20)
@@ -307,7 +307,7 @@ def make_file(i):
                 task_about = entry_about.get()
 
             if entry_color.get() == "":
-                task_color = "black"
+                task_color = "darkred"
             else:
                 task_color = entry_color.get()
 
@@ -336,7 +336,7 @@ def make_file(i):
             add_list.append(task_about)
 
         if entry_color.get() == "":
-            task_color = "black"
+            task_color = "darkred"
             add_list.append(task_color)
         else:
             task_color = entry_color.get()
@@ -356,7 +356,7 @@ def make_file(i):
 
             fp = open(filename,"a",encoding="utf-8_sig")
             for i in range(0,len(save_txt)):
-                line = save_txt[i][0] + ","+save_txt[i][1]+","+save_txt[i][2]+"\n"
+                line = save_txt[i][0] + ","+save_txt[i][1]+","+save_txt[i][2]+","+save_txt[i][3]+"\n"
                 fp.writelines(line)              
             fp.close()
         else:
@@ -369,7 +369,7 @@ def make_file(i):
         if filename != "":
             fp = open(filename,"a",encoding="utf-8_sig")
             for i in range(0,len(save_txt)):
-                line = save_txt[i][0] + ","+save_txt[i][1]+","+save_txt[i][2]+"\n"
+                line = save_txt[i][0] + ","+save_txt[i][1]+","+save_txt[i][2]+","+save_txt[i][3]+"\n"
                 fp.writelines(line)              
             fp.close()
 
@@ -397,19 +397,12 @@ def make_file(i):
     add_button = tk.Button(make_window, text="予定追加", command=add_file, width=15, height=2)
     add_button.place(x=210, y=390)
 
-    force_save_button = tk.Button(make_window, text="上書き保存",
+    force_save_button = tk.Button(make_window, text="保存",
                             command=force_save_file, width=15, height=2)
     force_save_button.place(x=20, y=460)
 
-    save_button = tk.Button(make_window, text="追記保存",
-                            command=save_file, width=15, height=2)
-    save_button.place(x=210, y=460)
-
-    open_button = tk.Button(make_window, text="ファイルを開く", command=close, width=15, height=2)
-    open_button.place(x=20, y=530)
-
     exit_button = tk.Button(make_window, text="終了する", command=close, width=15, height=2)
-    exit_button.place(x=210, y=530)
+    exit_button.place(x=210, y=460)
 
     tk.mainloop()
 
@@ -428,7 +421,7 @@ def start_month():
     month_list = ["", "1月", "2月", "3月", "4月", "5月", "6月",
                   "7月", "8月", "9月", "10月", "11月", "12月"]
 
-    about_month = tk.Label(setting, text="作成する月(西暦,必須)")
+    about_month = tk.Label(setting, text="作成する月(必須)")
     about_month.place(x=20, y=80)
 
     month_var = tk.IntVar()
@@ -441,7 +434,7 @@ def start_month():
     about_sunday = tk.Label(setting, text="日曜日赤色表示")
     about_sunday.place(x=220, y=20)
 
-    about_saturday = tk.Label(setting, text="土曜日赤色表示")
+    about_saturday = tk.Label(setting, text="土曜日青色表示")
     about_saturday.place(x=220, y=20)
 
     saturday_mode_list = ["ON", "OFF"]
@@ -534,7 +527,7 @@ def start_year():
     about_year = tk.Label(setting, text="生成する年(西暦,必須)")
     about_year.place(x=20, y=20)
 
-    about_saturday = tk.Label(setting, text="土曜日赤色表示")
+    about_saturday = tk.Label(setting, text="土曜日青色表示")
     about_saturday.place(x=220, y=20)
 
     saturday_mode_list = ["ON", "OFF"]
@@ -684,7 +677,7 @@ def start_year():
     fileopen_button.place(x=20, y=180)
 
     filemake_button = tk.Button(setting, text="読み込みファイル作成",
-                            command=partial(make_file, 0), width=15, height=2)
+                            command=make_file, width=15, height=2)
     filemake_button.place(x=180, y=180)
 
     next_button = tk.Button(setting, text="カレンダーを作る",
