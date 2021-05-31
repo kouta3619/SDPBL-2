@@ -5,7 +5,6 @@ import tkinter as tk            #sudo apt-get install python3-tk (Ubuntu)
 from tkinter import messagebox
 from tkinter import filedialog
 from natsort import natsorted   #pip install natsort(Windows/Ubuntu)
-from functools import partial
 
 def lastweek(year, month, dow):
     #その月の最終曜日を取得する(年,月,曜日)
@@ -64,7 +63,7 @@ def isleap(year):
         return 0
 
 
-def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_print, sat_mode, sun_mode):
+def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, task_x,task_y,cal_print, sat_mode, sun_mode):
     # 月表示(月,月の日数,初日の曜日までの空白,予定リスト,予定リストの番目数,表示X座標,表示Y座標,表示ウィンドウ名,土曜着色,日曜着色)
     # その月のカレンダー表示
     block = 0
@@ -115,6 +114,12 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
         if(int(task_month) == int(month) and int(task_day) == int(day)):
             if task_color == "":
                 task_color = "red1"
+
+            if (j >= 30) and (j % 30 == 0):
+                task_x += 200
+                task_y = 20
+            else:
+                task_y += 20
             
             if  int(task_day)< 10 and int(task_month) < 10:
                 task_print = "0"+str(task_month)+"月0" +\
@@ -127,11 +132,11 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
                     str(task_day)+"日："+str(task_about)
             else:
                 task_print = str(task_month)+"月" +\
-                    str(task_day)+"日："+str(task_about)
-            
+                        str(task_day)+"日："+str(task_about)
+
             print_task = tk.Label(
                 cal_print, text=task_print, foreground=task_color)
-            print_task.place(x=500, y=40+(j*20))
+            print_task.place(x=500+task_x, y=40+task_y)
             
             while 1:
                 if j+1 < len(task_list) != "":
@@ -150,6 +155,13 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
                         break
                     else:
                         j += 1
+
+                        if (j >= 30) and (j % 30 == 0):
+                            task_x += 200
+                            task_y = 20
+                        else:
+                            task_y += 20
+
                         if int(next_task_day) < 10 and int(next_task_month) < 10:
                             task_print = "0"+str(next_task_month)+"月0" +\
                             str(next_task_day)+"日："+str(next_task_about)
@@ -163,9 +175,8 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
                             task_print = str(next_task_month)+"月" +\
                                 str(next_task_day)+"日："+str(next_task_about)
                         print_task = tk.Label(
-                        cal_print, text=task_print, foreground=next_task_color)
-                        print_task.place(x=500, y=40+(j*20))
-
+                            cal_print, text=task_print, foreground=next_task_color)
+                        print_task.place(x=500+task_x, y=40+task_y)
                 else:
                     break
                     
@@ -189,7 +200,7 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, cal_pr
             newy += 20
         block += 1
     weekday = block % 7
-    return (weekday, j)
+    return (weekday, j,task_x,task_y)
 
 
 def exit():
@@ -465,10 +476,13 @@ def start_month():
         sat_mode = saturday_mode_var.get()
         sun_mode = sunday_mode_var.get()
         task_list = []
-        ret = messagebox.askyesno(
-            '確認', year + '年' + month_list[month] + 'を作成しますか？')
-        if not(0 <= int(year) <= 9999):
+        if not(1583 <= int(year) <= 3999):
+            error_txt = "年が範囲外です。(有効な年は 1583年から3999年までです)"
+            messagebox.showerror("警告", error_txt)
             return
+        else:
+            ret = messagebox.askyesno(
+                '確認', year + '年' + month_list[month] + 'を作成しますか？')
         if ret == False:
             return
         else:
@@ -497,7 +511,7 @@ def start_month():
         else:
             day = 28
 
-        printmonth(int(month),  int(day), weekday, task_list,  0, xmonth, ymonth, cal_print, sat_mode, sun_mode)
+        printmonth(int(month),  int(day), weekday, task_list,  0, xmonth, ymonth, 0,0,cal_print, sat_mode, sun_mode)
 
         def month_close():
             cal_print.destroy()
@@ -589,10 +603,13 @@ def start_year():
 
         task_list = natsorted(tasklist)
 
-        ret = messagebox.askyesno(
-            '確認', year + '年を作成しますか？')
-        if not(0 <= int(year) <= 9999):
+        if not(1583 <= int(year) <= 3999):
+            error_txt = "年が範囲外です。(有効な年は 1583年から3999年までです)"
+            messagebox.showerror("警告", error_txt)
             return
+        else:
+            ret = messagebox.askyesno(
+            '確認', year + '年を作成しますか？')
         if ret == False:
             return
         else:
@@ -600,7 +617,7 @@ def start_year():
             leap = isleap(int(year))
             cal_print = tk.Tk()
             cal_print.title("生成結果")
-            cal_print.geometry("1000x780")
+            cal_print.geometry("1600x760")
             printyear = str(year) + "年"
             mon = tk.Label(cal_print, text=printyear)
             mon.place(x=20, y=20)
@@ -611,6 +628,8 @@ def start_year():
             yweek = 60
             xnew = 70
             ynew = 40
+            task_x = 0
+            task_y = 0
             j = 0
             printtask = tk.Label(
                 cal_print, text="予定一覧", foreground="black")
@@ -636,9 +655,11 @@ def start_year():
             else:
                 day = 28
             c = printmonth(int(month),  int(day), int(
-                weekday), task_list,  j, xmonth, ymonth, cal_print, sat_mode, sun_mode)
+                weekday), task_list,  j, xmonth, ymonth, task_x, task_y, cal_print, sat_mode, sun_mode)
             weekday = c[0]
             j = c[1]
+            task_x = c[2]
+            task_y = c[3]
             xmonth += 160
             xweek += 160
             xnew = xnew + 160
