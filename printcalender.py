@@ -116,7 +116,7 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, task_x
                 task_color = "red1"
 
             if (j >= 30) and (j % 30 == 0):
-                task_x += 200
+                task_x += 250
                 task_y = 20
             else:
                 task_y += 20
@@ -157,7 +157,7 @@ def printmonth(month,  month_day, weekday, task_list,  j, xmonth, ymonth, task_x
                         j += 1
 
                         if (j >= 30) and (j % 30 == 0):
-                            task_x += 200
+                            task_x += 250
                             task_y = 20
                         else:
                             task_y += 20
@@ -267,17 +267,31 @@ def make_file():
         print(task_txt)
         view_list = tk.Tk()
         view_list.title("ファイルの内容")
-        view_list.geometry("300x600")
+        view_list.geometry("1500x760")
         about = tk.Label(view_list, text="現在のファイルの内容です")
         about.place(x=20, y=20)
+        task_x = 0
+        task_y = 0
         for i in range(0,len(task_txt)):
             list_month = task_txt[i][0]
             list_day = task_txt[i][1]
             list_about = task_txt[i][2]
             list_color = task_txt[i][3]
 
+            if list_color == "":
+                list_color = "red"
+
+            if (i >= 30) and (i % 30 == 0):
+                task_x += 300
+                task_y = 20
+            else:
+                task_y += 20
+
             if int(list_day) < 0 and int(list_month)<10:
                 task_print = "0"+str(list_month)+"月" +\
+                    "特殊日："+str(list_about)
+            elif int(list_day) < 0 and int(list_month)>=10:
+                task_print = str(list_month)+"月" +\
                     "特殊日："+str(list_about)
             elif  int(list_day)< 10 and int(list_month) < 10:
                 task_print = "0"+str(list_month)+"月0" +\
@@ -294,13 +308,13 @@ def make_file():
             
             print_task = tk.Label(
                 view_list, text=task_print, foreground=list_color)
-            print_task.place(x=20, y=40+(i*20))
+            print_task.place(x=20+task_x, y=40+task_y)
 
         def view_close():
             view_list.destroy() 
 
         exit_button = tk.Button(view_list, text="閉じる", command=view_close, width=15, height=2)
-        exit_button.place(x=20, y=530)
+        exit_button.place(x=20, y=700)
         tk.mainloop()
 
 
@@ -372,18 +386,7 @@ def make_file():
             fp.close()
         else:
             return
-
-    def save_file():
-        save_txt = natsorted(task_txt)
-        types = [("テキストファイル", ".txt")]
-        filename = filedialog.asksaveasfilename(filetypes=types)
-        if filename != "":
-            fp = open(filename,"a",encoding="utf-8_sig")
-            for i in range(0,len(save_txt)):
-                line = save_txt[i][0] + ","+save_txt[i][1]+","+save_txt[i][2]+","+save_txt[i][3]+"\n"
-                fp.writelines(line)              
-            fp.close()
-
+            
     def close():
         ret = messagebox.askyesno('確認','このモードを終了しますか？')
         if ret == False:
@@ -617,7 +620,7 @@ def start_year():
             leap = isleap(int(year))
             cal_print = tk.Tk()
             cal_print.title("生成結果")
-            cal_print.geometry("1600x760")
+            cal_print.geometry("1800x760")
             printyear = str(year) + "年"
             mon = tk.Label(cal_print, text=printyear)
             mon.place(x=20, y=20)
