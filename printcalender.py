@@ -483,6 +483,10 @@ def start_month():
             error_txt = "年が範囲外です。(有効な年は 1583年から3999年までです)"
             messagebox.showerror("警告", error_txt)
             return
+        elif not(1 <= int(month) <= 12):
+            error_txt = "月が範囲外です。(有効な月は 1月から12月までです)"
+            messagebox.showerror("警告", error_txt)
+            return
         else:
             ret = messagebox.askyesno(
                 '確認', year + '年' + month_list[month] + 'を作成しますか？')
